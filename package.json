@@ -1,0 +1,48 @@
+{
+  "name": "@eigiai/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for eigi.ai — manage AI agents, prompts, calls, and chat from your terminal",
+  "type": "module",
+  "bin": {
+    "eigi": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/main.js",
+    "clean": "rm -rf dist",
+    "test": "node dist/main.js --help",
+    "test:smoke": "./scripts/smoke-test.sh",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": ["ai", "agents", "voice", "cli", "eigi", "chatbot", "tts", "stt", "llm"],
+  "author": "eigi.ai",
+  "license": "MIT",
+  "homepage": "https://eigi.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cliniq360/eigi-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cliniq360/eigi-cli/issues"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^13.1.0",
+    "conf": "^13.1.0",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

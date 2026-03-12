@@ -1,0 +1,9 @@
+src/
+scripts/
+tsconfig.json
+*.ts
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
