@@ -6,7 +6,7 @@
 
 Manage AI voice agents, prompts, calls, and chat — all from your terminal.
 
-[![npm version](https://img.shields.io/npm/v/@eigiai/cli.svg)](https://www.npmjs.com/package/@eigiai/cli)
+[![npm version](https://img.shields.io/npm/v/@cliniq360/eigi-cli.svg)](https://www.npmjs.com/package/@cliniq360/eigi-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
 
@@ -32,13 +32,13 @@ Manage AI voice agents, prompts, calls, and chat — all from your terminal.
 ### npm (recommended)
 
 ```bash
-npm install -g @eigiai/cli
+npm install -g @cliniq360/eigi-cli
 ```
 
 ### npx (no install)
 
 ```bash
-npx @eigiai/cli agents list
+npx @cliniq360/eigi-cli agents list
 ```
 
 ### From source

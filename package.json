@@ -1,5 +1,5 @@
 {
-  "name": "@eigiai/cli",
+  "name": "@cliniq360/eigi-cli",
   "version": "0.1.0",
   "description": "CLI tool for eigi.ai — manage AI agents, prompts, calls, and chat from your terminal",
   "type": "module",
@@ -15,7 +15,17 @@
     "test:smoke": "./scripts/smoke-test.sh",
     "prepublishOnly": "npm run clean && npm run build"
   },
-  "keywords": ["ai", "agents", "voice", "cli", "eigi", "chatbot", "tts", "stt", "llm"],
+  "keywords": [
+    "ai",
+    "agents",
+    "voice",
+    "cli",
+    "eigi",
+    "chatbot",
+    "tts",
+    "stt",
+    "llm"
+  ],
   "author": "eigi.ai",
   "license": "MIT",
   "homepage": "https://eigi.ai",
