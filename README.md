@@ -1,14 +1,41 @@
+<div align="center">
+
 # eigi CLI
 
-Command-line interface for the [eigi.ai](https://eigi.ai) AI agent platform. Manage agents, prompts, calls, and chat — all from your terminal.
+**The official command-line interface for [eigi.ai](https://eigi.ai)**
 
-## Install
+Manage AI voice agents, prompts, calls, and chat — all from your terminal.
+
+[![npm version](https://img.shields.io/npm/v/@eigiai/cli.svg)](https://www.npmjs.com/package/@eigiai/cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org/)
+
+</div>
+
+---
+
+## Features
+
+- **Agent Management** — Create, update, list, and delete AI voice agents with full STT/LLM/TTS configuration
+- **Prompt Versioning** — Manage system prompts with automatic versioning and file/stdin support
+- **Interactive Chat** — Real-time streaming chat with agents directly from your terminal
+- **Outbound Calls** — Initiate AI-powered phone calls to one or multiple numbers
+- **Conversation History** — Browse and inspect past calls and chat sessions
+- **Provider Discovery** — Explore available LLM, TTS, and STT providers, models, and voices
+- **JSON Output** — Every command supports `--json` for scripting and automation
+- **Pipe-friendly** — Read prompts from files, pipe stdin, and chain commands with `jq`
+
+---
+
+## Installation
+
+### npm (recommended)
 
 ```bash
 npm install -g @eigiai/cli
 ```
 
-Or use directly with npx:
+### npx (no install)
 
 ```bash
 npx @eigiai/cli agents list
@@ -19,35 +46,50 @@ npx @eigiai/cli agents list
 ```bash
 git clone https://github.com/cliniq360/eigi-cli.git
 cd eigi-cli
-npm install
-npm run build
+npm install && npm run build
 npm link   # makes 'eigi' available globally
 ```
+
+---
 
 ## Quick Start
 
 ```bash
-# 1. Configure your API key (get it from https://studio.eigi.ai)
-eigi config set-key vk_your_api_key_here
+# 1. Set your API key (get one at https://studio.eigi.ai)
+eigi config set-key YOUR_API_KEY
 
-# 2. Point to your backend (optional — defaults to https://api.eigi.ai)
-eigi config set-url http://localhost:4000    # local dev
-eigi config set-url https://dev-api.eigi.ai  # QA
-
-# 3. Start using it
+# 2. List your agents
 eigi agents list
+
+# 3. Start chatting
 eigi chat interactive <AGENT_ID>
 ```
 
+> **Tip:** Set `EIGI_BASE_URL` to point to a local or staging server:
+>
+> ```bash
+> eigi config set-url http://localhost:4000
+> ```
+
+---
+
 ## Commands
 
-### Agents
+### `eigi agents` — Manage AI Agents
+
+| Command                             | Description                                               |
+| ----------------------------------- | --------------------------------------------------------- |
+| `eigi agents list`                  | List all agents (supports `--type`, `--search`, `--page`) |
+| `eigi agents get <ID>`              | Get full agent configuration                              |
+| `eigi agents create [options]`      | Create a new agent                                        |
+| `eigi agents update <ID> [options]` | Update agent properties                                   |
+| `eigi agents delete <ID>`           | Delete an agent                                           |
+
+<details>
+<summary><strong>Example: Create a full agent</strong></summary>
 
 ```bash
-eigi agents list                             # List all agents
-eigi agents list --type INBOUND --search "support"
-eigi agents get <AGENT_ID>                   # Get agent details
-eigi agents create \                         # Create an agent
+eigi agents create \
   --name "Support Bot" \
   --type INBOUND \
   --stt-provider DEEPGRAM --stt-model nova-2 --stt-language en \
@@ -55,160 +97,148 @@ eigi agents create \                         # Create an agent
   --tts-provider CARTESIA --tts-model sonic-2 --tts-language en --tts-voice-id <VOICE_ID> \
   --prompt-content "You are a helpful support agent." \
   --first-message "Hello! How can I help you today?"
-eigi agents update <AGENT_ID> --name "New Name" --llm-model gpt-4o-mini
-eigi agents delete <AGENT_ID>
 ```
 
-### Prompts
+</details>
+
+### `eigi prompts` — Prompt Management
+
+| Command                                           | Description                    |
+| ------------------------------------------------- | ------------------------------ |
+| `eigi prompts list`                               | List latest prompt versions    |
+| `eigi prompts list --all-versions`                | Show all versions              |
+| `eigi prompts get <NAME>`                         | Get latest version of a prompt |
+| `eigi prompts get <NAME> --version 2`             | Get a specific version         |
+| `eigi prompts versions <NAME>`                    | List all versions of a prompt  |
+| `eigi prompts create --name <N> --content <TEXT>` | Create from inline text        |
+| `eigi prompts create --name <N> --file <PATH>`    | Create from file               |
+| `eigi prompts update <NAME> --file <PATH>`        | Update prompt content          |
+| `eigi prompts delete <NAME>`                      | Delete a prompt                |
+
+Prompts also accept **piped stdin**:
 
 ```bash
-eigi prompts list                            # List latest prompts
-eigi prompts list --all-versions             # Show all versions
-eigi prompts get <NAME>                      # Get latest version
-eigi prompts get <NAME> --version 2          # Get specific version
-eigi prompts versions <NAME>                 # List all versions
-eigi prompts create --name "sales-v1" --content "You are a sales agent..."
-eigi prompts create --name "support" --file prompt.txt
-cat prompt.txt | eigi prompts create --name "piped"
-eigi prompts update <NAME> --file updated.txt
-eigi prompts delete <NAME>
-```
-
-### Chat
-
-```bash
-eigi chat send --agent-id <ID> --message "Hello"            # Single message
-eigi chat send --agent-id <ID> -m "Hello" --no-stream       # Non-streaming
-eigi chat interactive <AGENT_ID>                             # Interactive session
-eigi chat first-message <AGENT_ID>                           # Get greeting
-eigi chat sessions list                                      # List sessions
-eigi chat sessions list --agent-id <ID>                      # Filter by agent
-eigi chat sessions get <SESSION_ID>                          # Session details
-```
-
-### Calls
-
-```bash
-eigi calls outbound --agent-id <ID> --phone "+1234567890"
-eigi calls outbound --agent-id <ID> -p "+111" -p "+222"     # Multiple numbers
-eigi calls outbound --agent-id <ID> --phone "+111" --test   # Test call
-```
-
-### Conversations
-
-```bash
-eigi conversations list                      # List all conversations
-eigi conversations list --type TELEPHONY --calling-type OUTBOUND
-eigi conversations get <CONVERSATION_ID>     # Get full details
-```
-
-### Providers & Voices
-
-```bash
-eigi providers list                          # List LLM/TTS/STT providers + models
-eigi voices list --provider CARTESIA         # List Cartesia voices
-eigi voices list --provider ELEVENLABS --language en --gender FEMALE --search "aria"
-eigi mobile-numbers                          # List your phone numbers
-```
-
-### Configuration
-
-```bash
-eigi config set-key <API_KEY>                # Store API key
-eigi config set-url <BASE_URL>              # Set backend URL
-eigi config set-format json                  # Default output as JSON
-eigi config show                             # Show current config
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|---|---|---|
-| `EIGI_API_KEY` | API key (overrides config file) | — |
-| `EIGI_BASE_URL` | Backend URL | `https://api.eigi.ai` |
-
-## JSON Output
-
-Every command supports `--json` for machine-readable output:
-
-```bash
-eigi agents list --json | jq '.agents[].agent_name'
-eigi agents get <ID> --json > agent.json
-```
-
-## Piping
-
-```bash
-# Create prompt from file
 cat system_prompt.txt | eigi prompts create --name "v1"
+```
 
-# Pipe chat
+### `eigi chat` — Chat with Agents
+
+| Command                                              | Description                                |
+| ---------------------------------------------------- | ------------------------------------------ |
+| `eigi chat send --agent-id <ID> -m "Hello"`          | Send a single message (streams by default) |
+| `eigi chat send --agent-id <ID> -m "Hi" --no-stream` | Get the full response at once              |
+| `eigi chat interactive <AGENT_ID>`                   | Start an interactive chat session          |
+| `eigi chat first-message <AGENT_ID>`                 | Get the agent's greeting                   |
+| `eigi chat sessions list`                            | List chat sessions                         |
+| `eigi chat sessions get <SESSION_ID>`                | Get session details                        |
+
+### `eigi calls` — Outbound Calls
+
+| Command                                                     | Description           |
+| ----------------------------------------------------------- | --------------------- |
+| `eigi calls outbound --agent-id <ID> --phone "+1234567890"` | Call a single number  |
+| `eigi calls outbound --agent-id <ID> -p "+111" -p "+222"`   | Call multiple numbers |
+| `eigi calls outbound --agent-id <ID> -p "+111" --test`      | Place a test call     |
+
+### `eigi conversations` — Conversation History
+
+| Command                                                            | Description                   |
+| ------------------------------------------------------------------ | ----------------------------- |
+| `eigi conversations list`                                          | List all conversations        |
+| `eigi conversations list --type TELEPHONY --calling-type OUTBOUND` | Filter conversations          |
+| `eigi conversations get <ID>`                                      | Get full conversation details |
+
+### `eigi providers` / `eigi voices` — Discovery
+
+| Command                                                                | Description                                      |
+| ---------------------------------------------------------------------- | ------------------------------------------------ |
+| `eigi providers list`                                                  | List all LLM, TTS, and STT providers with models |
+| `eigi voices list --provider CARTESIA`                                 | List available voices                            |
+| `eigi voices list --provider ELEVENLABS --language en --gender FEMALE` | Filter voices                                    |
+| `eigi mobile-numbers`                                                  | List your purchased phone numbers                |
+
+### `eigi config` — Configuration
+
+| Command                          | Description                |
+| -------------------------------- | -------------------------- |
+| `eigi config set-key <API_KEY>`  | Store your API key         |
+| `eigi config set-url <BASE_URL>` | Set the backend URL        |
+| `eigi config set-format json`    | Set default output format  |
+| `eigi config show`               | Show current configuration |
+
+---
+
+## JSON Output & Scripting
+
+Every command supports `--json` for machine-readable output, making it easy to integrate with scripts and pipelines:
+
+```bash
+# Extract agent names
+eigi agents list --json | jq '.agents[].agent_name'
+
+# Save agent config to file
+eigi agents get <ID> --json > agent-backup.json
+
+# Pipe chat messages
 echo "What is your return policy?" | eigi chat send --agent-id <ID>
 
 # Chain commands
 AGENT_ID=$(eigi agents list --json | jq -r '.agents[0].id')
-eigi chat interactive $AGENT_ID
+eigi chat interactive "$AGENT_ID"
 ```
 
-## Testing
+---
 
-### Quick check
+## Environment Variables
 
-```bash
-npm run build
-npm test          # Prints --help to verify build works
-```
+| Variable        | Description                       | Default               |
+| --------------- | --------------------------------- | --------------------- |
+| `EIGI_API_KEY`  | API key (overrides stored config) | —                     |
+| `EIGI_BASE_URL` | Backend URL                       | `https://api.eigi.ai` |
 
-### Smoke tests (requires running server + API key)
+---
 
-```bash
-# Against local dev server
-EIGI_BASE_URL=http://localhost:4000 npm run test:smoke
+## Configuration
 
-# Against production
-npm run test:smoke
-```
+Config is stored at a platform-specific path (managed by [conf](https://github.com/sindresorhus/conf)):
 
-The smoke test (`scripts/smoke-test.sh`) runs through:
-1. **CLI basics** — help, version, all subcommand help pages
-2. **API reads** — providers, agents, prompts, conversations, voices, mobile-numbers
-3. **CRUD lifecycle** — creates an agent, updates it, chats, then deletes; same for prompts
+| Platform | Path                                            |
+| -------- | ----------------------------------------------- |
+| macOS    | `~/Library/Preferences/eigi-nodejs/config.json` |
+| Linux    | `~/.config/eigi-nodejs/config.json`             |
+| Windows  | `%APPDATA%\eigi-nodejs\config.json`             |
 
-### Manual testing
-
-```bash
-# Build and run directly
-npm run build
-node dist/main.js config show
-node dist/main.js agents list --json
-
-# Or use dev mode (no build step needed)
-npm run dev -- agents list
-```
+---
 
 ## Development
 
 ```bash
-npm install         # Install dependencies
-npm run build       # Compile TypeScript → dist/
+npm install            # Install dependencies
+npm run build          # Compile TypeScript → dist/
 npm run dev -- <args>  # Run without building (uses tsx)
-npm run clean       # Remove dist/
+npm run clean          # Remove dist/
 ```
 
-## Publishing
+### Testing
 
 ```bash
-# First time: login to npm
-npm login
+# Quick build check
+npm run build && npm test
 
-# Publish (runs clean + build automatically via prepublishOnly)
-npm publish --access public
+# Smoke tests (requires running server + API key)
+npm run test:smoke
+
+# Against a local server
+EIGI_BASE_URL=http://localhost:4000 npm run test:smoke
 ```
 
-## Config File
+---
 
-Stored at platform-specific config path (managed by [conf](https://github.com/sindresorhus/conf)):
+## Requirements
 
-- **macOS:** `~/Library/Preferences/eigi-nodejs/config.json`
-- **Linux:** `~/.config/eigi-nodejs/config.json`
-- **Windows:** `%APPDATA%/eigi-nodejs/config.json`
+- **Node.js** >= 18
+- An **eigi.ai API key** — get one at [studio.eigi.ai](https://studio.eigi.ai)
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT) — see [LICENSE](LICENSE) for details.
