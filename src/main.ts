@@ -36,9 +36,9 @@ program
       "  3. eigi chat interactive <AGENT_ID>\n\n" +
       "Environment variables:\n" +
       "  EIGI_API_KEY    — API key (overrides config file)\n" +
-      "  EIGI_BASE_URL   — Base URL (default: https://api.eigi.ai)"
+      "  EIGI_BASE_URL   — Base URL (default: https://api.eigi.ai)",
   )
-  .version("0.1.0");
+  .version("1.1.0");
 
 registerAgents(program);
 registerPrompts(program);

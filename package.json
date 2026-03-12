@@ -1,10 +1,10 @@
 {
   "name": "@cliniq360/eigi-cli",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "CLI tool for eigi.ai — manage AI agents, prompts, calls, and chat from your terminal",
   "type": "module",
   "bin": {
-    "eigi": "./dist/main.js"
+    "eigi": "dist/main.js"
   },
   "scripts": {
     "build": "tsc",
@@ -31,7 +31,7 @@
   "homepage": "https://eigi.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cliniq360/eigi-cli.git"
+    "url": "git+https://github.com/cliniq360/eigi-cli.git"
   },
   "bugs": {
     "url": "https://github.com/cliniq360/eigi-cli/issues"
