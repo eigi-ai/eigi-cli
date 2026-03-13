@@ -5,7 +5,7 @@
 # Requires:
 #   - The CLI to be built (npm run build)
 #   - An API key set (eigi config set-key <KEY>) or EIGI_API_KEY env var
-#   - A running backend (set EIGI_BASE_URL if not https://api.eigi.ai)
+#   - A running backend at https://api.eigi.ai
 #
 # Usage:
 #   npm run test:smoke
@@ -13,7 +13,6 @@
 #   ./scripts/smoke-test.sh
 #
 # Test with local backend:
-#   EIGI_BASE_URL=http://localhost:4000 npm run test:smoke
 #
 
 set -uo pipefail

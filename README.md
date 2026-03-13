@@ -4,7 +4,7 @@
 
 **The official command-line interface for [eigi.ai](https://eigi.ai)**
 
-Manage AI voice agents, prompts, calls, and chat — all from your terminal.
+Official CLI for eigi.ai voice agents.
 
 [![npm version](https://img.shields.io/npm/v/@cliniq360/eigi-cli.svg)](https://www.npmjs.com/package/@cliniq360/eigi-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -18,6 +18,7 @@ Manage AI voice agents, prompts, calls, and chat — all from your terminal.
 
 - **Agent Management** — Create, update, list, and delete AI voice agents with full STT/LLM/TTS configuration
 - **Prompt Versioning** — Manage system prompts with automatic versioning and file/stdin support
+- **Workflow Guides** — List the recommended pre-create flow before you build or update agents
 - **Interactive Chat** — Real-time streaming chat with agents directly from your terminal
 - **Outbound Calls** — Initiate AI-powered phone calls to one or multiple numbers
 - **Conversation History** — Browse and inspect past calls and chat sessions
@@ -58,18 +59,18 @@ npm link   # makes 'eigi' available globally
 # 1. Set your API key (get one at https://studio.eigi.ai)
 eigi config set-key YOUR_API_KEY
 
-# 2. List your agents
+# 2. See the recommended agent creation workflow
+eigi workflow agent-create
+
+# 3. Fetch a prompt or create one
+eigi prompts get <PROMPT_NAME>
+
+# 4. List your agents
 eigi agents list
 
-# 3. Start chatting
+# 5. Start chatting
 eigi chat interactive <AGENT_ID>
 ```
-
-> **Tip:** Set `EIGI_BASE_URL` to point to a local or staging server:
->
-> ```bash
-> eigi config set-url http://localhost:4000
-> ```
 
 ---
 
@@ -101,6 +102,17 @@ eigi agents create \
 
 </details>
 
+### `eigi workflow` — Recommended Workflows
+
+| Command                          | Description                                           |
+| -------------------------------- | ----------------------------------------------------- |
+| `eigi workflow list`             | List built-in workflow guides                         |
+| `eigi workflow agent-create`     | Show the recommended pre-agent-creation sequence      |
+| `eigi workflow prompt-lifecycle` | Show how to fetch, version, update, and reuse prompts |
+| `eigi workflow show <NAME>`      | Show a workflow by name                               |
+
+Use workflows when you want the CLI to tell you the safest order of operations before creating or updating resources.
+
 ### `eigi prompts` — Prompt Management
 
 | Command                                           | Description                    |
@@ -119,6 +131,13 @@ Prompts also accept **piped stdin**:
 
 ```bash
 cat system_prompt.txt | eigi prompts create --name "v1"
+```
+
+Fetch the current system instruction for review:
+
+```bash
+eigi prompts get support_v1
+eigi prompts get support_v1 --version 2
 ```
 
 ### `eigi chat` — Chat with Agents
@@ -159,12 +178,11 @@ cat system_prompt.txt | eigi prompts create --name "v1"
 
 ### `eigi config` — Configuration
 
-| Command                          | Description                |
-| -------------------------------- | -------------------------- |
-| `eigi config set-key <API_KEY>`  | Store your API key         |
-| `eigi config set-url <BASE_URL>` | Set the backend URL        |
-| `eigi config set-format json`    | Set default output format  |
-| `eigi config show`               | Show current configuration |
+| Command                         | Description                |
+| ------------------------------- | -------------------------- |
+| `eigi config set-key <API_KEY>` | Store your API key         |
+| `eigi config set-format json`   | Set default output format  |
+| `eigi config show`              | Show current configuration |
 
 ---
 
@@ -175,6 +193,9 @@ Every command supports `--json` for machine-readable output, making it easy to i
 ```bash
 # Extract agent names
 eigi agents list --json | jq '.agents[].agent_name'
+
+# Inspect available workflows
+eigi workflow list --json | jq '.workflows[].name'
 
 # Save agent config to file
 eigi agents get <ID> --json > agent-backup.json
@@ -189,12 +210,28 @@ eigi chat interactive "$AGENT_ID"
 
 ---
 
+## Recommended Agent Creation Flow
+
+If you are creating agents from scratch, the quickest reliable path is:
+
+```bash
+eigi workflow agent-create
+eigi providers list
+eigi voices list --provider CARTESIA --language en
+eigi prompts list
+eigi prompts get <PROMPT_NAME>
+eigi mobile-numbers   # only needed for inbound agents
+```
+
+Then create the agent with either `--prompt-name` to reuse an existing prompt or `--prompt-content` / `--prompt-file` to create one inline.
+
+---
+
 ## Environment Variables
 
-| Variable        | Description                       | Default               |
-| --------------- | --------------------------------- | --------------------- |
-| `EIGI_API_KEY`  | API key (overrides stored config) | —                     |
-| `EIGI_BASE_URL` | Backend URL                       | `https://api.eigi.ai` |
+| Variable       | Description                       | Default |
+| -------------- | --------------------------------- | ------- |
+| `EIGI_API_KEY` | API key (overrides stored config) | —       |
 
 ---
 
@@ -228,8 +265,6 @@ npm run build && npm test
 # Smoke tests (requires running server + API key)
 npm run test:smoke
 
-# Against a local server
-EIGI_BASE_URL=http://localhost:4000 npm run test:smoke
 ```
 
 ---

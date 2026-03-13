@@ -2,12 +2,12 @@
  * Configuration commands.
  *
  *   eigi config set-key <KEY>       → Store API key
- *   eigi config set-url <URL>       → Set custom base URL
  *   eigi config show                → Show current config
  *   eigi config set-format <FMT>    → Set default output format
  */
 
 import { Command } from "commander";
+import process from "node:process";
 import chalk from "chalk";
 import * as cfg from "../config.js";
 
@@ -19,7 +19,7 @@ function maskKey(key: string): string {
 export function registerConfig(program: Command): void {
   const config = program
     .command("config")
-    .description("Configure CLI settings — API key, base URL, output format.");
+    .description("Configure CLI settings — API key and output format.");
 
   config
     .command("set-key")
@@ -28,15 +28,6 @@ export function registerConfig(program: Command): void {
     .action((apiKey: string) => {
       cfg.setApiKey(apiKey);
       console.log(`✓ API key saved to ${cfg.getConfigPath()}`);
-    });
-
-  config
-    .command("set-url")
-    .argument("<base_url>", "Backend URL")
-    .description("Set custom API base URL.")
-    .action((baseUrl: string) => {
-      cfg.setBaseUrl(baseUrl);
-      console.log(`✓ Base URL set to ${baseUrl}`);
     });
 
   config
@@ -57,24 +48,17 @@ export function registerConfig(program: Command): void {
     .description("Show current CLI configuration.")
     .action(() => {
       const apiKey = cfg.getApiKey();
-      const baseUrl = cfg.getBaseUrl();
       const outputFmt = cfg.getOutputFormat();
 
       console.log(`${chalk.bold("Config file:")}  ${cfg.getConfigPath()}`);
       console.log(
-        `${chalk.bold("API Key:")}     ${apiKey ? maskKey(apiKey) : chalk.red("Not set")}`
+        `${chalk.bold("API Key:")}     ${apiKey ? maskKey(apiKey) : chalk.red("Not set")}`,
       );
-      console.log(`${chalk.bold("Base URL:")}    ${baseUrl}`);
       console.log(`${chalk.bold("Format:")}      ${outputFmt}`);
 
       if (process.env[cfg.ENV_API_KEY]) {
         console.log(
-          chalk.dim(`  (API key overridden by ${cfg.ENV_API_KEY} env var)`)
-        );
-      }
-      if (process.env[cfg.ENV_BASE_URL]) {
-        console.log(
-          chalk.dim(`  (Base URL overridden by ${cfg.ENV_BASE_URL} env var)`)
+          chalk.dim(`  (API key overridden by ${cfg.ENV_API_KEY} env var)`),
         );
       }
     });

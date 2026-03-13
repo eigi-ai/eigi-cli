@@ -17,6 +17,7 @@ import { registerAgents } from "./commands/agents.js";
 import { registerPrompts } from "./commands/prompts.js";
 import { registerChat } from "./commands/chat.js";
 import { registerCalls, registerConversations } from "./commands/calls.js";
+import { registerWorkflow } from "./commands/workflow.js";
 import {
   registerProviders,
   registerVoices,
@@ -28,23 +29,28 @@ const program = new Command();
 
 program
   .name("eigi")
-  .description(
-    "Manage AI agents, prompts, calls, and chat from your terminal.\n\n" +
-      "Get started:\n" +
-      "  1. eigi config set-key <YOUR_API_KEY>\n" +
-      "  2. eigi agents list\n" +
-      "  3. eigi chat interactive <AGENT_ID>\n\n" +
-      "Environment variables:\n" +
-      "  EIGI_API_KEY    — API key (overrides config file)\n" +
-      "  EIGI_BASE_URL   — Base URL (default: https://api.eigi.ai)",
-  )
+  .description("Official CLI for eigi.ai voice agents.")
   .version("1.1.0");
+
+program.addHelpText(
+  "after",
+  "\nQuick start:\n" +
+    "  1. eigi config set-key <YOUR_API_KEY>\n" +
+    "  2. eigi workflow agent-create\n" +
+    "  3. eigi prompts get <PROMPT_NAME>\n" +
+    "  4. eigi agents list\n\n" +
+    "Useful commands:\n" +
+    "  eigi workflow list\n" +
+    "  eigi providers list\n" +
+    "  eigi chat interactive <AGENT_ID>\n",
+);
 
 registerAgents(program);
 registerPrompts(program);
 registerChat(program);
 registerCalls(program);
 registerConversations(program);
+registerWorkflow(program);
 registerProviders(program);
 registerVoices(program);
 registerMobileNumbers(program);
